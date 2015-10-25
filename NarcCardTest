@@ -1,0 +1,63 @@
+#include "SoftwareSerial.h"
+#include "Adafruit_Thermal.h"
+
+#include <avr/pgmspace.h>
+
+int printer_RX_Pin = 5;  // This is the green wire
+int printer_TX_Pin = 6;  // This is the yellow wire
+
+Adafruit_Thermal printer(printer_RX_Pin, printer_TX_Pin);
+
+void setup(){
+  Serial.begin(9600);
+  pinMode(7, OUTPUT); digitalWrite(7, LOW); // To also work w/IoTP printer
+  printer.begin();
+
+  //printer.feed(1);
+  printer.justify('C');
+  printer.setSize('L');
+  printer.println("EMS"); 
+  printer.setSize('M');
+  printer.underlineOn(); 
+  printer.println("Narcotic Usage Receipt");
+  printer.underlineOff();
+  
+  printer.feed(1);
+  printer.setSize('S');
+  printer.justify('L');
+  printer.println("Date: 09-04-2013");
+  printer.println("Unit: M12");
+  printer.println("Med: VERSED");
+  printer.println("Dose: 4mg");
+  printer.println("Waste: 1mg");
+  printer.println("Method: On ground");
+  
+  printer.feed(1);
+  printer.println("Patient: John Doe");
+  printer.println("PCR: 01234");
+  printer.println("Medic: Dominick Watts");
+  printer.println("Witness: John Doe");
+  
+  printer.feed(1);
+  printer.println("Medic:________________________");
+  printer.feed(1);
+  printer.println("Witness:______________________");
+  
+  printer.setSize('S');
+  printer.justify('C');
+  printer.println("Receipt is required to restock!");
+  
+  // Barcode examples
+  printer.feed(1);
+  printer.setBarcodeHeight(100);
+  // Print UPC line on product barcodes
+  printer.printBarcode("154263985749", UPC_A);
+  
+  printer.sleep();      // Tell printer to sleep
+  printer.wake();       // MUST call wake() before printing again, even if reset
+  printer.setDefault(); // Restore printer to defaults
+
+}
+
+void loop() {
+}
